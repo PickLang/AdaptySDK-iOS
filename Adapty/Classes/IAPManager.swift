@@ -211,7 +211,7 @@ class IAPManager: NSObject {
         SKPaymentQueue.canMakePayments()
     }
     
-    func makePurchase(product: ProductModel, offerId: String? = nil, completion: BuyProductCompletion? = nil) {
+    func makePurchase(product: ProductModel, offerId: String? = nil, applicationUsername: String? = nil, completion: BuyProductCompletion? = nil) {
         guard canMakePayments else {
             DispatchQueue.main.async {
                 completion?(nil, nil, nil, product, AdaptyError.cantMakePayments)
@@ -223,20 +223,20 @@ class IAPManager: NSObject {
         product.skProduct = self.skProduct(for: product)
         if product.skProduct != nil {
             // procceed to payment in case of a valid SKProduct
-            internalMakePurchase(product: product, offerId: offerId, completion: completion)
+            internalMakePurchase(product: product, offerId: offerId, applicationUsername: applicationUsername, completion: completion)
             return
         }
         
         // re-sync paywalls to get an actual data
         internalGetPaywalls { (_, _, _) in
             product.skProduct = self.skProduct(for: product)
-            self.internalMakePurchase(product: product, offerId: offerId, completion: completion)
+            self.internalMakePurchase(product: product, offerId: offerId, applicationUsername: applicationUsername, completion: completion)
         }
     }
     
     
     
-    private func internalMakePurchase(product: ProductModel, offerId: String? = nil, completion: BuyProductCompletion? = nil) {
+    private func internalMakePurchase(product: ProductModel, offerId: String? = nil, applicationUsername: String? = nil, completion: BuyProductCompletion? = nil) {
         guard let skProduct = product.skProduct else {
             DispatchQueue.main.async {
                 completion?(nil, nil, nil, product, AdaptyError.noProductsFound)
@@ -245,7 +245,7 @@ class IAPManager: NSObject {
         }
         
         if #available(iOS 12.2, macOS 10.14.4, *), let offerId = offerId {
-            createPayment(from: product, discountId: offerId, skProduct: skProduct, completion: completion)
+            createPayment(from: product, discountId: offerId, applicationUsername: applicationUsername, skProduct: skProduct, completion: completion)
         } else {
             createPayment(from: product, skProduct: skProduct, completion: completion)
         }
@@ -311,7 +311,7 @@ class IAPManager: NSObject {
     }
     
     @available(iOS 12.2, macOS 10.14.4, *)
-    private func createPayment(from product: ProductModel, discountId: String, skProduct: SKProduct, completion: BuyProductCompletion? = nil) {
+    private func createPayment(from product: ProductModel, discountId: String, applicationUsername: String?, skProduct: SKProduct, completion: BuyProductCompletion? = nil) {
         apiManager.signSubscriptionOffer(params: ["product": product.vendorProductId, "offer_code": discountId, "profile_id": profileId]) { (params, error) in
             guard error == nil else {
                 completion?(nil, nil, nil, product, error)
@@ -332,7 +332,7 @@ class IAPManager: NSObject {
             
             let timestamp = NSNumber(value: timestampInt64)
             let payment = SKMutablePayment(product: skProduct)
-            payment.applicationUsername = ""
+            payment.applicationUsername = applicationUsername ?? ""
             payment.paymentDiscount = SKPaymentDiscount(identifier: discountId, keyIdentifier: keyIdentifier, nonce: nonce, signature: signature, timestamp: timestamp)
             
             self.productsToBuy.append((product: product,
