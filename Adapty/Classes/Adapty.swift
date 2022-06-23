@@ -343,7 +343,7 @@ import UIKit
         shared.iapManager.getPaywalls(forceUpdate: forceUpdate, completion)
     }
     
-    @objc public class func makePurchase(product: ProductModel, offerId: String? = nil, completion: @escaping BuyProductCompletion) {
+    @objc public class func makePurchase(product: ProductModel, offerId: String? = nil, applicationUsername: String? = nil, completion: @escaping BuyProductCompletion) {
         LoggerManager.logMessage("Calling now: \(#function)")
         
         let hasPaywalls = (shared.iapManager.paywalls?.count ?? 0) > 0
@@ -354,7 +354,7 @@ import UIKit
             assertionFailure("[Adapty] In order to properly measure performance of the paywalls, you need to use products from paywalls. https://docs.adapty.io/docs/ios-displaying-products#showcase")
         }
         
-        shared.iapManager.makePurchase(product: product, offerId: offerId) { (purchaserInfo, receipt, appleValidationResult, product, error) in
+        shared.iapManager.makePurchase(product: product, offerId: offerId, applicationUsername: applicationUsername) { (purchaserInfo, receipt, appleValidationResult, product, error) in
             if let error = error {
                 LoggerManager.logError("Failed to purchase product: \(product?.vendorProductId ?? "")\n\(error.localizedDescription)")
             } else {
