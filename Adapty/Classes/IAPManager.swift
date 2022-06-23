@@ -244,7 +244,7 @@ class IAPManager: NSObject {
             return
         }
         
-        if #available(iOS 12.2, macOS 10.14.4, *), let offerId = offerId {
+        if #available(iOS 12.2, macOS 10.14.4, *) {
             createPayment(from: product, discountId: offerId, applicationUsername: applicationUsername, skProduct: skProduct, completion: completion)
         } else {
             createPayment(from: product, skProduct: skProduct, completion: completion)
@@ -311,7 +311,7 @@ class IAPManager: NSObject {
     }
     
     @available(iOS 12.2, macOS 10.14.4, *)
-    private func createPayment(from product: ProductModel, discountId: String, applicationUsername: String?, skProduct: SKProduct, completion: BuyProductCompletion? = nil) {
+    private func createPayment(from product: ProductModel, discountId: String?, applicationUsername: String?, skProduct: SKProduct, completion: BuyProductCompletion? = nil) {
         apiManager.signSubscriptionOffer(params: ["product": product.vendorProductId, "offer_code": discountId, "profile_id": profileId]) { (params, error) in
             guard error == nil else {
                 completion?(nil, nil, nil, product, error)
@@ -333,8 +333,9 @@ class IAPManager: NSObject {
             let timestamp = NSNumber(value: timestampInt64)
             let payment = SKMutablePayment(product: skProduct)
             payment.applicationUsername = applicationUsername ?? ""
-            payment.paymentDiscount = SKPaymentDiscount(identifier: discountId, keyIdentifier: keyIdentifier, nonce: nonce, signature: signature, timestamp: timestamp)
-            
+            if let discountId = discountId {
+                payment.paymentDiscount = SKPaymentDiscount(identifier: discountId, keyIdentifier: keyIdentifier, nonce: nonce, signature: signature, timestamp: timestamp)
+            }
             self.productsToBuy.append((product: product,
                                        payment: payment,
                                        completion: completion))
