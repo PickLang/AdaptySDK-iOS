@@ -211,7 +211,7 @@ class IAPManager: NSObject {
         SKPaymentQueue.canMakePayments()
     }
     
-    func makePurchase(product: ProductModel, offerId: String? = nil, applicationUsername: String? = nil, completion: BuyProductCompletion? = nil) {
+    func makePurchase(product: ProductModel, applicationUsername: String? = nil, offerId: String? = nil, completion: BuyProductCompletion? = nil) {
         guard canMakePayments else {
             DispatchQueue.main.async {
                 completion?(nil, nil, nil, product, AdaptyError.cantMakePayments)
