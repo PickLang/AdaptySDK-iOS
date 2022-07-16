@@ -223,20 +223,20 @@ class IAPManager: NSObject {
         product.skProduct = self.skProduct(for: product)
         if product.skProduct != nil {
             // procceed to payment in case of a valid SKProduct
-            internalMakePurchase(product: product, offerId: offerId, applicationUsername: applicationUsername, completion: completion)
+            internalMakePurchase(product: product, applicationUsername: applicationUsername, offerId: offerId, completion: completion)
             return
         }
         
         // re-sync paywalls to get an actual data
         internalGetPaywalls { (_, _, _) in
             product.skProduct = self.skProduct(for: product)
-            self.internalMakePurchase(product: product, offerId: offerId, applicationUsername: applicationUsername, completion: completion)
+            self.internalMakePurchase(product: product, applicationUsername: applicationUsername, offerId: offerId, completion: completion)
         }
     }
     
     
     
-    private func internalMakePurchase(product: ProductModel, offerId: String? = nil, applicationUsername: String? = nil, completion: BuyProductCompletion? = nil) {
+    private func internalMakePurchase(product: ProductModel, applicationUsername: String? = nil, offerId: String? = nil, completion: BuyProductCompletion? = nil) {
         guard let skProduct = product.skProduct else {
             DispatchQueue.main.async {
                 completion?(nil, nil, nil, product, AdaptyError.noProductsFound)

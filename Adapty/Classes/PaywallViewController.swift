@@ -101,11 +101,11 @@ import WebKit
         }
     }
     
-    private func buyProduct(_ product: ProductModel) {
+    private func buyProduct(_ product: ProductModel, applicationUsername: String? = nil,) {
         logKinesisEvent(.purchaseStarted, vendorProductId: product.vendorProductId)
         
         setLoaderVisible(true, animated: true)
-        Adapty.makePurchase(product: product, offerId: product.promotionalOfferId) { (purchaserInfo, receipt, appleValidationResult, _, error) in
+        Adapty.makePurchase(product: product, applicationUsername: applicationUsername, offerId: product.promotionalOfferId) { (purchaserInfo, receipt, appleValidationResult, _, error) in
             self.setLoaderVisible(false, animated: true)
             
             if let error = error {

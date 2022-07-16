@@ -53,11 +53,11 @@ extension InAppTableViewController: UITableViewDataSource {
 
 extension InAppTableViewController: InAppTableViewCellDelegate {
     
-    func didBuyProduct(_ product: ProductModel, useDiscount: Bool) {
+    func didBuyProduct(_ product: ProductModel, useDiscount: Bool, applicationUsername: String? = nil) {
         let discountId: String? = useDiscount ? product.discounts.first?.identifier : nil
         
         setUI(enabled: false)
-        Adapty.makePurchase(product: product, offerId: discountId) { (purchaserInfo, receipt, response, product, error) in
+        Adapty.makePurchase(product: product, applicationUsername: applicationUsername, offerId: discountId) { (purchaserInfo, receipt, response, product, error) in
             self.setUI(enabled: true)
             
             guard error == nil else {

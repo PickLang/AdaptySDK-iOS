@@ -99,14 +99,14 @@ class ShowcasePaywallViewController: UIViewController {
         }
     }
     
-    @IBAction private func subscribeButtonAction(_ sender: Any) {
+    @IBAction private func subscribeButtonAction(_ sender: Any,  applicationUsername: String? = nil) {
         guard let product = activeProduct else {
             return
         }
         
         setLoader(visible: true, animated: true)
         
-        Adapty.makePurchase(product: product) { purchaserInfo, receipt, appleValidationResult, product, error in
+        Adapty.makePurchase(product: product, applicationUsername: applicationUsername) { purchaserInfo, receipt, appleValidationResult, product, error in
             self.setLoader(visible: false, animated: true)
             
             self.showResultAlert(with: error == nil ? "Successful purchase" : error?.localizedDescription)

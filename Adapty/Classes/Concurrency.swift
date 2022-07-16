@@ -92,11 +92,13 @@ extension Adapty {
 
     public static func makePurchase(
         product: ProductModel,
+        applicationUsername: String? = nil,
         offerID: String? = nil
     ) async throws -> MakePurchaseResult {
         return try await withCheckedThrowingContinuation { continuation in
             Adapty.makePurchase(
                 product: product,
+                applicationUsername: applicationUsername,
                 offerId: offerID,
                 completion: { purchaserInfo, receipt, appleValidationResult, product, error in
                     if let error = error {
