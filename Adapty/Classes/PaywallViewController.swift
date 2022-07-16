@@ -101,7 +101,7 @@ import WebKit
         }
     }
     
-    private func buyProduct(_ product: ProductModel, applicationUsername: String? = nil,) {
+    private func buyProduct(_ product: ProductModel, applicationUsername: String? = nil) {
         logKinesisEvent(.purchaseStarted, vendorProductId: product.vendorProductId)
         
         setLoaderVisible(true, animated: true)
